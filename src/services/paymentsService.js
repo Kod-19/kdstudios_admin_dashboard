@@ -1,33 +1,36 @@
-import { 
-  collection, 
-  doc, 
-  getDocs, 
-  getDoc, 
-  updateDoc, 
-  query, 
-  orderBy, 
-  where, 
-  serverTimestamp 
-} from 'firebase/firestore';
-import { db } from '../lib/firebase/firebase';
-import { logActivity } from './activityService';
+import {
+  collection,
+  doc,
+  getDocs,
+  getDoc,
+  updateDoc,
+  query,
+  orderBy,
+  where,
+  serverTimestamp,
+} from "firebase/firestore";
+import { db } from "../lib/firebase/firebase";
+import { logActivity } from "./activityService";
 
-const PAYMENTS_COLLECTION = 'payments';
+const PAYMENTS_COLLECTION = "payments";
 
-export const paymentsService = {
+export const paymentService = {
   /**
    * Fetch all payment records ordered by creation date (newest first).
    */
-  async getPayments() {
+  async getAllPayments() {
     try {
-      const q = query(collection(db, PAYMENTS_COLLECTION), orderBy('createdAt', 'desc'));
+      const q = query(
+        collection(db, PAYMENTS_COLLECTION),
+        orderBy("createdAt", "desc"),
+      );
       const snapshot = await getDocs(q);
-      return snapshot.docs.map(doc => ({
+      return snapshot.docs.map((doc) => ({
         id: doc.id,
-        ...doc.data()
+        ...doc.data(),
       }));
     } catch (error) {
-      console.error('Error fetching payments:', error);
+      console.error("Error fetching payments:", error);
       throw error;
     }
   },
@@ -42,9 +45,9 @@ export const paymentsService = {
       if (docSnap.exists()) {
         return { id: docSnap.id, ...docSnap.data() };
       }
-      throw new Error('Payment record not found');
+      throw new Error("Payment record not found");
     } catch (error) {
-      console.error('Error fetching payment:', error);
+      console.error("Error fetching payment:", error);
       throw error;
     }
   },
@@ -52,23 +55,23 @@ export const paymentsService = {
   /**
    * Connect a payment record to a client ID.
    */
-  async linkClient(paymentId, clientId, actorId = 'admin') {
+  async linkClient(paymentId, clientId, actorId = "admin") {
     try {
       const docRef = doc(db, PAYMENTS_COLLECTION, paymentId);
       await updateDoc(docRef, {
         clientId: clientId,
-        updatedAt: serverTimestamp()
+        updatedAt: serverTimestamp(),
       });
 
       await logActivity({
         actorId,
-        action: 'PAYMENT_LINKED_TO_CLIENT',
-        entityType: 'payment',
+        action: "PAYMENT_LINKED_TO_CLIENT",
+        entityType: "payment",
         entityId: paymentId,
-        summary: `Linked payment ${paymentId} to client ${clientId}`
+        summary: `Linked payment ${paymentId} to client ${clientId}`,
       });
     } catch (error) {
-      console.error('Error linking client to payment:', error);
+      console.error("Error linking client to payment:", error);
       throw error;
     }
   },
@@ -76,15 +79,15 @@ export const paymentsService = {
   /**
    * Manually verify or update payment status.
    */
-  async updateStatus(paymentId, status, actorId = 'admin') {
+  async updatePaymentStatus(paymentId, status, actorId = "admin") {
     try {
       const docRef = doc(db, PAYMENTS_COLLECTION, paymentId);
       const updates = {
         status,
-        updatedAt: serverTimestamp()
+        updatedAt: serverTimestamp(),
       };
 
-      if (status === 'verified') {
+      if (status === "verified") {
         updates.verifiedAt = serverTimestamp();
       }
 
@@ -92,14 +95,14 @@ export const paymentsService = {
 
       await logActivity({
         actorId,
-        action: 'PAYMENT_STATUS_UPDATED',
-        entityType: 'payment',
+        action: "PAYMENT_STATUS_UPDATED",
+        entityType: "payment",
         entityId: paymentId,
-        summary: `Updated payment ${paymentId} status to ${status}`
+        summary: `Updated payment ${paymentId} status to ${status}`,
       });
     } catch (error) {
-      console.error('Error updating payment status:', error);
+      console.error("Error updating payment status:", error);
       throw error;
     }
-  }
+  },
 };

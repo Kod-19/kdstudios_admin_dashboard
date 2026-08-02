@@ -1,32 +1,28 @@
-import { 
-  collection, 
-  doc, 
-  getDocs, 
-  getDoc, 
-  addDoc, 
-  updateDoc, 
-  query, 
-  orderBy, 
-  where, 
-  serverTimestamp 
+import {
+  collection,
+  getDocs,
+  getDoc,
+  doc,
+  addDoc,
+  updateDoc,
+  deleteDoc,
+  query,
+  orderBy,
+  serverTimestamp
 } from 'firebase/firestore';
-import { db } from '../config/firebase';
-import { logActivity } from './activityService';
+import { db } from '../lib/firebase/firebase';
 
-const CLIENTS_COLLECTION = 'clients';
+const COLLECTION_NAME = 'clients';
 
 export const clientsService = {
   /**
-   * Fetch all clients ordered by newest first.
+   * Fetch all clients ordered by creation date
    */
-  async getClients() {
+  async getAllClients() {
     try {
-      const q = query(collection(db, CLIENTS_COLLECTION), orderBy('createdAt', 'desc'));
+      const q = query(collection(db, COLLECTION_NAME), orderBy('createdAt', 'desc'));
       const snapshot = await getDocs(q);
-      return snapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      }));
+      return snapshot.docs.map((d) => ({ id: d.id, ...d.data() }));
     } catch (error) {
       console.error('Error fetching clients:', error);
       throw error;
@@ -34,30 +30,36 @@ export const clientsService = {
   },
 
   /**
-   * Create a new client record.
+   * Fetch a single client by ID
    */
-  async createClient(clientData, actorId = 'admin') {
+  async getClientById(id) {
     try {
-      const docRef = await addDoc(collection(db, CLIENTS_COLLECTION), {
+      const docRef = doc(db, COLLECTION_NAME, id);
+      const snapshot = await getDoc(docRef);
+      if (!snapshot.exists()) throw new Error('Client not found');
+      return { id: snapshot.id, ...snapshot.data() };
+    } catch (error) {
+      console.error('Error fetching client:', error);
+      throw error;
+    }
+  },
+
+  /**
+   * Create a new client record
+   */
+  async createClient(clientData) {
+    try {
+      const docRef = await addDoc(collection(db, COLLECTION_NAME), {
         name: clientData.name || '',
         email: clientData.email || '',
         phone: clientData.phone || '',
-        businessName: clientData.businessName || '',
-        status: clientData.status || 'new_lead',
+        company: clientData.company || '',
+        status: clientData.status || 'lead', // 'lead' | 'active' | 'completed' | 'archived'
         notes: clientData.notes || '',
-        sourceMessageId: clientData.sourceMessageId || null,
+        totalSpentGhs: Number(clientData.totalSpentGhs || 0),
         createdAt: serverTimestamp(),
-        updatedAt: serverTimestamp()
+        updatedAt: serverTimestamp(),
       });
-
-      await logActivity({
-        actorId,
-        action: 'CLIENT_CREATED',
-        entityType: 'client',
-        entityId: docRef.id,
-        summary: `Created client: ${clientData.name || clientData.email}`
-      });
-
       return docRef.id;
     } catch (error) {
       console.error('Error creating client:', error);
@@ -66,25 +68,46 @@ export const clientsService = {
   },
 
   /**
-   * Update an existing client.
+   * Update client details
    */
-  async updateClient(clientId, clientData, actorId = 'admin') {
+  async updateClient(id, clientData) {
     try {
-      const docRef = doc(db, CLIENTS_COLLECTION, clientId);
+      const docRef = doc(db, COLLECTION_NAME, id);
       await updateDoc(docRef, {
         ...clientData,
-        updatedAt: serverTimestamp()
-      });
-
-      await logActivity({
-        actorId,
-        action: 'CLIENT_UPDATED',
-        entityType: 'client',
-        entityId: clientId,
-        summary: `Updated client: ${clientData.name || clientId}`
+        updatedAt: serverTimestamp(),
       });
     } catch (error) {
       console.error('Error updating client:', error);
+      throw error;
+    }
+  },
+
+  /**
+   * Quick update client status
+   */
+  async updateClientStatus(id, status) {
+    try {
+      const docRef = doc(db, COLLECTION_NAME, id);
+      await updateDoc(docRef, {
+        status,
+        updatedAt: serverTimestamp(),
+      });
+    } catch (error) {
+      console.error('Error updating client status:', error);
+      throw error;
+    }
+  },
+
+  /**
+   * Delete a client record
+   */
+  async deleteClient(id) {
+    try {
+      const docRef = doc(db, COLLECTION_NAME, id);
+      await deleteDoc(docRef);
+    } catch (error) {
+      console.error('Error deleting client:', error);
       throw error;
     }
   }
