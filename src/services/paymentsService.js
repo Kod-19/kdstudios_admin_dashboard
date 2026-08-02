@@ -9,7 +9,7 @@ import {
   where, 
   serverTimestamp 
 } from 'firebase/firestore';
-import { db } from '../config/firebase';
+import { db } from '../lib/firebase/firebase';
 import { logActivity } from './activityService';
 
 const PAYMENTS_COLLECTION = 'payments';

@@ -1,22 +1,22 @@
 import React, { useState, useEffect } from 'react';
-import { projectService } from '../services/projectService';
+import { blogService } from '../services/blogService';
 
-export default function Projects() {
-  const [projects, setProjects] = useState([]);
+export default function Blog() {
+  const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('all');
 
   useEffect(() => {
-    loadProjects();
+    loadPosts();
   }, []);
 
-  const loadProjects = async () => {
+  const loadPosts = async () => {
     setLoading(true);
     try {
-      const data = await projectService.getAllProjects();
-      setProjects(data);
+      const data = await blogService.getAllPosts();
+      setPosts(data);
     } catch (err) {
-      console.error('Error loading projects:', err);
+      console.error('Error loading blog posts:', err);
     } finally {
       setLoading(false);
     }
@@ -24,26 +24,26 @@ export default function Projects() {
 
   const handleToggleStatus = async (id, currentStatus) => {
     try {
-      const nextStatus = await projectService.togglePublishStatus(id, currentStatus);
-      setProjects((prev) =>
+      const nextStatus = await blogService.togglePublishStatus(id, currentStatus);
+      setPosts((prev) =>
         prev.map((p) => (p.id === id ? { ...p, publishStatus: nextStatus } : p))
       );
     } catch (err) {
-      alert('Failed to update publish status');
+      alert('Failed to update post status');
     }
   };
 
   const handleDelete = async (id, title) => {
-    if (!window.confirm(`Are you sure you want to delete "${title}"?`)) return;
+    if (!window.confirm(`Are you sure you want to delete post "${title}"?`)) return;
     try {
-      await projectService.deleteProject(id);
-      setProjects((prev) => prev.filter((p) => p.id !== id));
+      await blogService.deletePost(id);
+      setPosts((prev) => prev.filter((p) => p.id !== id));
     } catch (err) {
-      alert('Failed to delete project');
+      alert('Failed to delete post');
     }
   };
 
-  const filteredProjects = projects.filter((p) => {
+  const filteredPosts = posts.filter((p) => {
     if (filter === 'published') return p.publishStatus === 'published';
     if (filter === 'draft') return p.publishStatus === 'draft';
     return true;
@@ -54,14 +54,14 @@ export default function Projects() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-white">Projects CMS</h1>
-          <p className="text-slate-400 text-sm">Manage your portfolio showcase items and live project status.</p>
+          <h1 className="text-2xl font-bold text-white">Blog & Articles CMS</h1>
+          <p className="text-slate-400 text-sm">Write articles, studio updates, and technical notes.</p>
         </div>
         <button
-          onClick={() => alert('Connect your project edit modal or navigate to /projects/new')}
+          onClick={() => alert('Connect your post edit modal or navigate to /blog/new')}
           className="bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold px-4 py-2 rounded-lg text-sm transition self-start sm:self-auto"
         >
-          + Add New Project
+          + Write New Post
         </button>
       </div>
 
@@ -77,17 +77,17 @@ export default function Projects() {
                 : 'text-slate-400 hover:text-white hover:bg-slate-900'
             }`}
           >
-            {status} ({status === 'all' ? projects.length : projects.filter((p) => p.publishStatus === status).length})
+            {status} ({status === 'all' ? posts.length : posts.filter((p) => p.publishStatus === status).length})
           </button>
         ))}
       </div>
 
-      {/* Projects List */}
+      {/* Posts List */}
       {loading ? (
-        <div className="p-8 text-center text-slate-400">Loading portfolio projects...</div>
-      ) : filteredProjects.length === 0 ? (
+        <div className="p-8 text-center text-slate-400">Loading blog posts...</div>
+      ) : filteredPosts.length === 0 ? (
         <div className="p-12 text-center bg-slate-900 border border-slate-800 rounded-xl">
-          <p className="text-slate-400 text-sm">No projects found for this status.</p>
+          <p className="text-slate-400 text-sm">No blog posts found for this filter.</p>
         </div>
       ) : (
         <div className="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden">
@@ -95,67 +95,64 @@ export default function Projects() {
             <table className="w-full text-left text-xs text-slate-300">
               <thead className="bg-slate-950/60 text-slate-400 uppercase font-mono border-b border-slate-800">
                 <tr>
-                  <th className="py-3.5 px-4">Project</th>
-                  <th className="py-3.5 px-4">Category</th>
-                  <th className="py-3.5 px-4">Tech Stack</th>
+                  <th className="py-3.5 px-4">Article</th>
+                  <th className="py-3.5 px-4">Tags</th>
+                  <th className="py-3.5 px-4">Read Time</th>
                   <th className="py-3.5 px-4">Status</th>
                   <th className="py-3.5 px-4 text-right">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-800/60">
-                {filteredProjects.map((project) => (
-                  <tr key={project.id} className="hover:bg-slate-800/30 transition">
+                {filteredPosts.map((post) => (
+                  <tr key={post.id} className="hover:bg-slate-800/30 transition">
                     <td className="py-3 px-4 font-medium text-white flex items-center gap-3">
-                      {project.coverImage ? (
+                      {post.coverImage ? (
                         <img
-                          src={project.coverImage}
+                          src={post.coverImage}
                           alt=""
-                          className="w-10 h-10 rounded object-cover border border-slate-800 bg-slate-950 shrink-0"
+                          className="w-12 h-10 rounded object-cover border border-slate-800 bg-slate-950 shrink-0"
                         />
                       ) : (
-                        <div className="w-10 h-10 rounded bg-slate-800 border border-slate-700 flex items-center justify-center text-slate-500 font-mono text-[10px] shrink-0">
-                          N/A
+                        <div className="w-12 h-10 rounded bg-slate-800 border border-slate-700 flex items-center justify-center text-slate-500 font-mono text-[10px] shrink-0">
+                          BLOG
                         </div>
                       )}
                       <div>
-                        <p className="font-semibold text-white text-sm">{project.title}</p>
-                        <p className="text-slate-400 text-[11px] truncate max-w-xs">{project.subtitle || project.description}</p>
+                        <p className="font-semibold text-white text-sm line-clamp-1">{post.title}</p>
+                        <p className="text-slate-400 text-[11px] line-clamp-1">{post.excerpt || post.slug}</p>
                       </div>
                     </td>
-                    <td className="py-3 px-4 text-slate-300">{project.category}</td>
                     <td className="py-3 px-4">
                       <div className="flex flex-wrap gap-1">
-                        {project.techStack?.slice(0, 3).map((tech, idx) => (
+                        {post.tags?.slice(0, 3).map((tag, idx) => (
                           <span key={idx} className="bg-slate-800 text-slate-300 px-2 py-0.5 rounded text-[10px] border border-slate-700">
-                            {tech}
+                            #{tag}
                           </span>
                         ))}
-                        {project.techStack?.length > 3 && (
-                          <span className="text-[10px] text-slate-500 font-mono">+{project.techStack.length - 3}</span>
-                        )}
                       </div>
                     </td>
+                    <td className="py-3 px-4 text-slate-400 font-mono">{post.readTime || '3 min'}</td>
                     <td className="py-3 px-4">
                       <button
-                        onClick={() => handleToggleStatus(project.id, project.publishStatus)}
+                        onClick={() => handleToggleStatus(post.id, post.publishStatus)}
                         className={`px-2.5 py-1 rounded-full text-[10px] font-bold border transition ${
-                          project.publishStatus === 'published'
+                          post.publishStatus === 'published'
                             ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30 hover:bg-emerald-500/20'
                             : 'bg-slate-800 text-slate-400 border-slate-700 hover:bg-slate-700'
                         }`}
                       >
-                        {project.publishStatus === 'published' ? '● Published' : '○ Draft'}
+                        {post.publishStatus === 'published' ? '● Published' : '○ Draft'}
                       </button>
                     </td>
                     <td className="py-3 px-4 text-right space-x-2">
                       <button
-                        onClick={() => alert(`Edit project ${project.id}`)}
+                        onClick={() => alert(`Edit post ${post.id}`)}
                         className="text-slate-400 hover:text-amber-400 font-medium text-xs px-2 py-1 rounded transition"
                       >
                         Edit
                       </button>
                       <button
-                        onClick={() => handleDelete(project.id, project.title)}
+                        onClick={() => handleDelete(post.id, post.title)}
                         className="text-slate-500 hover:text-red-400 font-medium text-xs px-2 py-1 rounded transition"
                       >
                         Delete
