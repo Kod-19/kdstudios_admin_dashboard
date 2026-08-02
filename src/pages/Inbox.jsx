@@ -136,7 +136,7 @@ const Inbox = () => {
       </div>
 
       {/* Main Inbox Panel */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 min-h-[500px]">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 min-h-125">
         {/* Messages List Column */}
         <div className="lg:col-span-5 bg-brand-card border border-brand-border rounded-xl divide-y divide-brand-border overflow-hidden">
           {filteredMessages.length === 0 ? (

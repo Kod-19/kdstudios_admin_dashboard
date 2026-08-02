@@ -6,6 +6,8 @@ import DashboardLayout from '../src/components/DashboardLayout';
 import LoginPage from '../src/pages/auth/LoginPage';
 import Overview from './pages/Overview';
 import Inbox from './pages/Inbox';
+import Settings from './pages/Settings';
+import Projects from './pages/Projects';
 
 function App() {
   return (
@@ -20,6 +22,8 @@ function App() {
             <Route path="/dashboard" element={<DashboardLayout />}>
               <Route index element={<Overview />} />
               <Route path="inbox" element={<Inbox />} />
+              <Route path="settings" element={<Settings />} />
+              <Route path="projects" element={<Projects />} />
               <Route path="projects" element={<div className="text-white">Projects Module Placeholder</div>} />
               <Route path="blog" element={<div className="text-white">Blog Module Placeholder</div>} />
               <Route path="payments" element={<div className="text-white">Payments Module Placeholder</div>} />

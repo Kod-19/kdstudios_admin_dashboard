@@ -8,7 +8,7 @@ import {
   addDoc, 
   serverTimestamp 
 } from 'firebase/firestore';
-import { db } from '../lib/firebase';
+import { db } from '../lib/firebase/firebase';
 import { COLLECTIONS, logActivity } from './db';
 
 /**
