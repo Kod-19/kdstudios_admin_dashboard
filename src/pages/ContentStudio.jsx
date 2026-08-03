@@ -76,37 +76,74 @@ export default function ContentStudio() {
 
   const handleCreateService = async (event) => {
     event.preventDefault();
-    await contentService.createService(form);
-    setForm(emptyService);
-    loadData();
+    try {
+      await contentService.createService(form);
+      setForm(emptyService);
+      loadData();
+    } catch (error) {
+      console.error("Failed to save service", error);
+      alert("Failed to save service");
+    }
+  };
+
+  const handleDeleteService = async (id, title) => {
+    if (!window.confirm(`Are you sure you want to delete "${title}"?`)) return;
+
+    try {
+      await contentService.deleteService(id);
+      setServices((prev) => prev.filter((service) => service.id !== id));
+    } catch (error) {
+      console.error("Failed to delete service", error);
+      alert("Failed to delete service");
+    }
   };
 
   const handleCreateTestimonial = async (event) => {
     event.preventDefault();
-    await contentService.createTestimonial(testimonialForm);
-    setTestimonialForm(emptyTestimonial);
-    loadData();
+    try {
+      await contentService.createTestimonial(testimonialForm);
+      setTestimonialForm(emptyTestimonial);
+      loadData();
+    } catch (error) {
+      console.error("Failed to save testimonial", error);
+      alert("Failed to save testimonial");
+    }
   };
 
   const handleCreateFaq = async (event) => {
     event.preventDefault();
-    await contentService.createFaqItem(faqForm);
-    setFaqForm(emptyFaq);
-    loadData();
+    try {
+      await contentService.createFaqItem(faqForm);
+      setFaqForm(emptyFaq);
+      loadData();
+    } catch (error) {
+      console.error("Failed to save FAQ item", error);
+      alert("Failed to save FAQ item");
+    }
   };
 
   const handleCreateTeamMember = async (event) => {
     event.preventDefault();
-    await contentService.createTeamMember(teamForm);
-    setTeamForm(emptyTeamMember);
-    loadData();
+    try {
+      await contentService.createTeamMember(teamForm);
+      setTeamForm(emptyTeamMember);
+      loadData();
+    } catch (error) {
+      console.error("Failed to save team member", error);
+      alert("Failed to save team member");
+    }
   };
 
   const handleGallerySubmit = async (event) => {
     event.preventDefault();
-    await contentService.createGalleryItem(galleryForm);
-    setGalleryForm({ title: "", caption: "", imageUrl: "" });
-    loadData();
+    try {
+      await contentService.createGalleryItem(galleryForm);
+      setGalleryForm({ title: "", caption: "", imageUrl: "" });
+      loadData();
+    } catch (error) {
+      console.error("Failed to save gallery item", error);
+      alert("Failed to save gallery item");
+    }
   };
 
   const renderServices = () => (
@@ -163,14 +200,23 @@ export default function ContentStudio() {
             key={service.id}
             className="bg-slate-900 border border-slate-800 rounded-xl p-4 text-sm text-slate-300"
           >
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between gap-4">
               <div>
                 <p className="font-semibold text-white">{service.title}</p>
                 <p className="text-slate-400">{service.description}</p>
               </div>
-              <span className="text-xs text-slate-500">
-                Order {service.sortOrder}
-              </span>
+              <div className="flex shrink-0 items-center gap-3">
+                <span className="text-xs text-slate-500">
+                  Order {service.sortOrder}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => handleDeleteService(service.id, service.title)}
+                  className="text-slate-500 hover:text-red-400 font-medium text-xs px-2 py-1 rounded transition"
+                >
+                  Delete
+                </button>
+              </div>
             </div>
           </div>
         ))}
