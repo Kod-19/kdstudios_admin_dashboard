@@ -138,7 +138,7 @@ const Inbox = () => {
       </div>
 
       {/* Main Inbox Panel */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 min-h-125">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-6 min-h-125">
         {/* Messages List Column */}
         <div className="lg:col-span-5 bg-brand-card border border-brand-border rounded-xl divide-y divide-brand-border overflow-hidden">
           {filteredMessages.length === 0 ? (
@@ -200,12 +200,12 @@ const Inbox = () => {
         </div>
 
         {/* Message Detail View Column */}
-        <div className="lg:col-span-7 bg-brand-card border border-brand-border rounded-xl p-6">
+        <div className="lg:col-span-7 bg-brand-card border border-brand-border rounded-xl p-4 sm:p-6">
           {selectedMessage ? (
             <div className="space-y-6">
               {/* Header Actions */}
-              <div className="flex items-center justify-between border-b border-brand-border pb-4">
-                <div className="flex items-center gap-2">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-brand-border pb-4">
+                <div className="flex flex-wrap items-center gap-2">
                   <span className="text-xs px-2.5 py-1 bg-brand-border/50 text-slate-300 rounded font-mono uppercase">
                     {selectedMessage.status}
                   </span>
@@ -215,7 +215,7 @@ const Inbox = () => {
                     <button
                       disabled={loadingAction}
                       onClick={() => handleConvertToClient(selectedMessage)}
-                      className="flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 bg-brand-accent text-slate-950 rounded hover:bg-sky-400 transition"
+                      className="flex items-center gap-1.5 text-xs font-semibold px-3 py-2 sm:py-1.5 bg-brand-accent text-slate-950 rounded hover:bg-sky-400 transition"
                     >
                       <UserPlus className="w-3.5 h-3.5" /> Convert to Client
                     </button>
@@ -230,7 +230,7 @@ const Inbox = () => {
                           : "archived",
                       )
                     }
-                    className="p-1.5 text-slate-400 hover:text-white bg-brand-border/30 hover:bg-brand-border rounded transition"
+                    className="p-2 sm:p-1.5 text-slate-400 hover:text-white bg-brand-border/30 hover:bg-brand-border rounded transition"
                   >
                     <Archive className="w-4 h-4" />
                   </button>
@@ -248,7 +248,8 @@ const Inbox = () => {
                 <div className="text-xs text-slate-400 space-y-1 mt-2">
                   <p>
                     <strong className="text-slate-300">From:</strong>{" "}
-                    {selectedMessage.name} ({selectedMessage.email})
+                    <span className="break-words">{selectedMessage.name}</span>{" "}
+                    <span className="break-all">({selectedMessage.email})</span>
                   </p>
                   {selectedMessage.phone && (
                     <p>

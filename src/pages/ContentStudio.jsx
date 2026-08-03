@@ -200,12 +200,12 @@ export default function ContentStudio() {
             key={service.id}
             className="bg-slate-900 border border-slate-800 rounded-xl p-4 text-sm text-slate-300"
           >
-            <div className="flex items-center justify-between gap-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div>
                 <p className="font-semibold text-white">{service.title}</p>
                 <p className="text-slate-400">{service.description}</p>
               </div>
-              <div className="flex shrink-0 items-center gap-3">
+              <div className="flex w-full sm:w-auto shrink-0 items-center justify-between sm:justify-end gap-3">
                 <span className="text-xs text-slate-500">
                   Order {service.sortOrder}
                 </span>
@@ -454,12 +454,12 @@ export default function ContentStudio() {
           for the public site.
         </p>
       </div>
-      <div className="flex flex-wrap gap-2 border-b border-slate-800 pb-3">
+      <div className="flex gap-2 border-b border-slate-800 pb-3 overflow-x-auto">
         {tabs.map((tab) => (
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
-            className={`px-3 py-1.5 rounded-lg text-sm font-semibold ${activeTab === tab.id ? "bg-slate-800 text-amber-400" : "text-slate-400"}`}
+            className={`whitespace-nowrap px-3 py-1.5 rounded-lg text-sm font-semibold ${activeTab === tab.id ? "bg-slate-800 text-amber-400" : "text-slate-400"}`}
           >
             {tab.label}
           </button>

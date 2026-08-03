@@ -85,8 +85,8 @@ export default function ProjectModal({ isOpen, onClose, projectToEdit, onSaveSuc
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-end">
-      <div className="bg-slate-900 border-l border-slate-800 w-full max-w-lg h-full p-6 overflow-y-auto shadow-2xl flex flex-col justify-between">
+    <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-stretch justify-end">
+      <div className="bg-slate-900 sm:border-l border-slate-800 w-full sm:max-w-lg h-dvh p-4 sm:p-6 overflow-y-auto shadow-2xl flex flex-col justify-between">
         <div>
           {/* Modal Header */}
           <div className="flex items-center justify-between pb-4 border-b border-slate-800">
@@ -95,9 +95,10 @@ export default function ProjectModal({ isOpen, onClose, projectToEdit, onSaveSuc
             </h2>
             <button
               onClick={onClose}
-              className="text-slate-400 hover:text-white text-sm font-bold"
+              aria-label="Close project form"
+              className="inline-flex h-10 w-10 items-center justify-center rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 text-sm font-bold"
             >
-              ✕
+              X
             </button>
           </div>
 
@@ -115,7 +116,7 @@ export default function ProjectModal({ isOpen, onClose, projectToEdit, onSaveSuc
               />
             </div>
 
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
                 <label className="block text-slate-300 font-semibold mb-1">Category</label>
                 <select
@@ -189,7 +190,7 @@ export default function ProjectModal({ isOpen, onClose, projectToEdit, onSaveSuc
               />
             </div>
 
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
                 <label className="block text-slate-300 font-semibold mb-1">Live URL</label>
                 <input
@@ -216,7 +217,7 @@ export default function ProjectModal({ isOpen, onClose, projectToEdit, onSaveSuc
         </div>
 
         {/* Modal Footer */}
-        <div className="pt-4 border-t border-slate-800 flex justify-end gap-3">
+        <div className="sticky bottom-0 -mx-4 sm:-mx-6 -mb-4 sm:-mb-6 mt-4 border-t border-slate-800 bg-slate-900/95 p-4 sm:p-6 flex flex-col-reverse sm:flex-row justify-end gap-3">
           <button
             type="button"
             onClick={onClose}

@@ -77,7 +77,7 @@ export default function MediaLibrary() {
 
       {/* Add Asset Form Card */}
       {isAddOpen && (
-        <form onSubmit={handleAddMedia} className="bg-slate-900 border border-slate-800 p-5 rounded-xl space-y-4">
+        <form onSubmit={handleAddMedia} className="bg-slate-900 border border-slate-800 p-4 sm:p-5 rounded-xl space-y-4">
           <h3 className="text-sm font-bold text-white">Register Cloud Asset URL</h3>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <input
@@ -106,11 +106,11 @@ export default function MediaLibrary() {
               <option value="video">Video</option>
             </select>
           </div>
-          <div className="flex justify-end">
+          <div className="flex justify-stretch sm:justify-end">
             <button
               type="submit"
               disabled={submitting}
-              className="bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold px-4 py-2 rounded-lg text-xs transition disabled:opacity-50"
+              className="w-full sm:w-auto bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold px-4 py-2 rounded-lg text-xs transition disabled:opacity-50"
             >
               {submitting ? 'Saving...' : 'Save Media Link'}
             </button>
@@ -126,7 +126,7 @@ export default function MediaLibrary() {
           <p className="text-slate-400 text-sm">No media assets saved yet.</p>
         </div>
       ) : (
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-4 gap-4">
           {mediaItems.map((item) => (
             <div key={item.id} className="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden flex flex-col justify-between group">
               <div className="h-32 bg-slate-950 relative border-b border-slate-800/80 flex items-center justify-center overflow-hidden">

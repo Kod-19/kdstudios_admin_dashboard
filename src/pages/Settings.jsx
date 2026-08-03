@@ -68,7 +68,7 @@ export default function Settings() {
 
       <form onSubmit={handleSave} className="space-y-6">
         {/* Profile Info */}
-        <div className="bg-slate-900 border border-slate-800 rounded-xl p-6 space-y-4">
+        <div className="bg-slate-900 border border-slate-800 rounded-xl p-4 sm:p-6 space-y-4">
           <h2 className="text-sm font-bold text-white border-b border-slate-800 pb-3">General Profile Settings</h2>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -115,7 +115,7 @@ export default function Settings() {
         </div>
 
         {/* Social Links */}
-        <div className="bg-slate-900 border border-slate-800 rounded-xl p-6 space-y-4">
+        <div className="bg-slate-900 border border-slate-800 rounded-xl p-4 sm:p-6 space-y-4">
           <h2 className="text-sm font-bold text-white border-b border-slate-800 pb-3">Social Profiles & Links</h2>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -152,7 +152,7 @@ export default function Settings() {
         </div>
 
         {/* Payment Integration Keys */}
-        <div className="bg-slate-900 border border-slate-800 rounded-xl p-6 space-y-4">
+        <div className="bg-slate-900 border border-slate-800 rounded-xl p-4 sm:p-6 space-y-4">
           <h2 className="text-sm font-bold text-white border-b border-slate-800 pb-3">Payment Gateway Integration</h2>
 
           <div>
@@ -168,7 +168,7 @@ export default function Settings() {
         </div>
 
         {/* Action bar */}
-        <div className="flex items-center justify-between pt-2">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-2">
           {saveSuccess ? (
             <span className="text-xs font-bold text-emerald-400">✓ Settings saved successfully!</span>
           ) : (
@@ -178,7 +178,7 @@ export default function Settings() {
           <button
             type="submit"
             disabled={saving}
-            className="bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold px-6 py-2.5 rounded-lg text-xs transition disabled:opacity-50"
+            className="w-full sm:w-auto bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold px-6 py-2.5 rounded-lg text-xs transition disabled:opacity-50"
           >
             {saving ? 'Saving Changes...' : 'Save Settings'}
           </button>

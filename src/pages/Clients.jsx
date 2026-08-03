@@ -134,8 +134,71 @@ export default function Clients() {
           <p className="text-slate-400 text-sm">No clients found matching your filter.</p>
         </div>
       ) : (
-        <div className="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden">
-          <div className="overflow-x-auto">
+        <>
+          <div className="grid gap-3 md:hidden">
+            {filteredClients.map((client) => (
+              <article
+                key={client.id}
+                className="bg-slate-900 border border-slate-800 rounded-xl p-4 space-y-4"
+              >
+                <div className="space-y-1">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0">
+                      <p className="font-semibold text-white text-sm break-words">
+                        {client.name}
+                      </p>
+                      <p className="text-slate-400 text-xs">
+                        {client.company || 'Individual Client'}
+                      </p>
+                    </div>
+                    <p className="text-emerald-400 font-bold text-xs whitespace-nowrap">
+                      GHS {(client.totalSpentGhs || 0).toLocaleString()}
+                    </p>
+                  </div>
+                  <p className="text-slate-300 text-xs break-all">
+                    {client.email || '-'}
+                  </p>
+                  {client.phone && (
+                    <p className="text-slate-500 text-[11px] font-mono">
+                      {client.phone}
+                    </p>
+                  )}
+                </div>
+
+                <div className="flex items-center justify-between gap-3 border-t border-slate-800/70 pt-3">
+                  <select
+                    value={client.status || 'lead'}
+                    onChange={(e) =>
+                      handleStatusChange(client.id, e.target.value)
+                    }
+                    className="bg-slate-950 border border-slate-700 text-slate-300 text-xs px-3 py-2 rounded-lg font-semibold capitalize outline-none focus:border-amber-500"
+                  >
+                    <option value="lead">Lead</option>
+                    <option value="active">Active</option>
+                    <option value="completed">Completed</option>
+                    <option value="archived">Archived</option>
+                  </select>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => handleOpenEdit(client)}
+                      className="text-slate-300 hover:text-amber-400 font-medium text-xs px-3 py-2 rounded-lg bg-slate-800/70 transition"
+                    >
+                      Edit
+                    </button>
+                    <button
+                      onClick={() => handleDelete(client.id, client.name)}
+                      className="text-red-300 hover:text-red-200 font-medium text-xs px-3 py-2 rounded-lg bg-red-500/10 transition"
+                    >
+                      Delete
+                    </button>
+                  </div>
+                </div>
+              </article>
+            ))}
+          </div>
+
+          <div className="hidden md:block bg-slate-900 border border-slate-800 rounded-xl overflow-hidden">
+            <div className="overflow-x-auto">
             <table className="w-full text-left text-xs text-slate-300">
               <thead className="bg-slate-950/60 text-slate-400 uppercase font-mono border-b border-slate-800">
                 <tr>
@@ -191,7 +254,8 @@ export default function Clients() {
               </tbody>
             </table>
           </div>
-        </div>
+          </div>
+        </>
       )}
 
       {/* Slide-over Client Modal */}

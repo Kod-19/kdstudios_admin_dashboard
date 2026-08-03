@@ -127,8 +127,83 @@ export default function Blog({ initialMode = null }) {
           </p>
         </div>
       ) : (
-        <div className="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden">
-          <div className="overflow-x-auto">
+        <>
+          <div className="grid gap-3 md:hidden">
+            {filteredPosts.map((post) => (
+              <article
+                key={post.id}
+                className="bg-slate-900 border border-slate-800 rounded-xl p-4 space-y-4"
+              >
+                <div className="flex gap-3">
+                  {post.coverImage ? (
+                    <img
+                      src={post.coverImage}
+                      alt=""
+                      className="w-16 h-14 rounded-lg object-cover border border-slate-800 bg-slate-950 shrink-0"
+                    />
+                  ) : (
+                    <div className="w-16 h-14 rounded-lg bg-slate-800 border border-slate-700 flex items-center justify-center text-slate-500 font-mono text-[10px] shrink-0">
+                      BLOG
+                    </div>
+                  )}
+                  <div className="min-w-0 flex-1">
+                    <p className="font-semibold text-white text-sm break-words">
+                      {post.title}
+                    </p>
+                    <p className="text-slate-400 text-xs mt-1 line-clamp-2">
+                      {post.excerpt || post.slug}
+                    </p>
+                    <p className="text-[11px] text-slate-500 mt-2 font-mono">
+                      {post.readTime || "3 min"}
+                    </p>
+                  </div>
+                </div>
+
+                {post.tags?.length > 0 && (
+                  <div className="flex flex-wrap gap-1.5">
+                    {post.tags.slice(0, 4).map((tag, idx) => (
+                      <span
+                        key={idx}
+                        className="bg-slate-800 text-slate-300 px-2 py-1 rounded text-[10px] border border-slate-700"
+                      >
+                        #{tag}
+                      </span>
+                    ))}
+                  </div>
+                )}
+
+                <div className="flex items-center justify-between gap-3 border-t border-slate-800/70 pt-3">
+                  <button
+                    onClick={() => handleToggleStatus(post.id, post.publishStatus)}
+                    className={`px-2.5 py-1 rounded-full text-[10px] font-bold border transition ${
+                      post.publishStatus === "published"
+                        ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/30"
+                        : "bg-slate-800 text-slate-400 border-slate-700"
+                    }`}
+                  >
+                    {post.publishStatus === "published" ? "Published" : "Draft"}
+                  </button>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => handleOpenEdit(post)}
+                      className="text-slate-300 hover:text-amber-400 font-medium text-xs px-3 py-2 rounded-lg bg-slate-800/70 transition"
+                    >
+                      Edit
+                    </button>
+                    <button
+                      onClick={() => handleDelete(post.id, post.title)}
+                      className="text-red-300 hover:text-red-200 font-medium text-xs px-3 py-2 rounded-lg bg-red-500/10 transition"
+                    >
+                      Delete
+                    </button>
+                  </div>
+                </div>
+              </article>
+            ))}
+          </div>
+
+          <div className="hidden md:block bg-slate-900 border border-slate-800 rounded-xl overflow-hidden">
+            <div className="overflow-x-auto">
             <table className="w-full text-left text-xs text-slate-300">
               <thead className="bg-slate-950/60 text-slate-400 uppercase font-mono border-b border-slate-800">
                 <tr>
@@ -216,7 +291,8 @@ export default function Blog({ initialMode = null }) {
               </tbody>
             </table>
           </div>
-        </div>
+          </div>
+        </>
       )}
 
       {/* Slide-over Blog Modal */}
