@@ -5,6 +5,7 @@ import {
   onSnapshot, 
   doc, 
   updateDoc, 
+  deleteDoc,
   addDoc, 
   serverTimestamp 
 } from 'firebase/firestore';
@@ -47,6 +48,15 @@ export const updateMessageStatus = async (messageId, status, actorId) => {
 
   await updateDoc(docRef, updates);
   await logActivity(actorId, 'UPDATE_STATUS', COLLECTIONS.MESSAGES, messageId, `Updated message status to ${status}`);
+};
+
+/**
+ * Permanently delete a message from the inbox
+ */
+export const deleteMessage = async (messageId, actorId) => {
+  const docRef = doc(db, COLLECTIONS.MESSAGES, messageId);
+  await deleteDoc(docRef);
+  await logActivity(actorId, 'DELETE', COLLECTIONS.MESSAGES, messageId, 'Deleted inbox message');
 };
 
 /**

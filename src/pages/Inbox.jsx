@@ -1,21 +1,40 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 import {
   subscribeToMessages,
   updateMessageStatus,
   convertMessageToClient,
+  deleteMessage,
 } from "../services/messageService";
 import {
   Mail,
-  CheckCircle,
   Archive,
   UserPlus,
   MessageSquare,
-  Briefcase,
-  Clock,
   Search,
   Filter,
+  Trash2,
 } from "lucide-react";
+
+const formatAnswer = (value) => {
+  if (Array.isArray(value)) return value.length ? value.join(", ") : "N/A";
+  return value || "N/A";
+};
+
+const getProjectBriefFields = (message) => [
+  ["Project Type", message.projectType],
+  ["Timeline", message.timeline],
+  ["Budget", message.budget],
+  ["Current Website", message.currentWebsite],
+  ["Pages Needed", message.pages],
+  ["Features Needed", message.features],
+  ["Main Goal", message.mainGoal || message.message],
+  ["Target Audience", message.targetAudience],
+  ["Design Style", message.designStyle],
+  ["References", message.references],
+  ["Content Readiness", message.contentReadiness],
+  ["Extra Notes", message.extraNotes],
+];
 
 const Inbox = () => {
   const { currentUser } = useAuth();
@@ -28,9 +47,11 @@ const Inbox = () => {
   useEffect(() => {
     const unsubscribe = subscribeToMessages((data) => {
       setMessages(data);
-      if (data.length > 0 && !selectedMessage) {
-        setSelectedMessage(data[0]);
-      }
+      setSelectedMessage((current) => {
+        if (data.length === 0) return null;
+        if (!current) return data[0];
+        return data.find((msg) => msg.id === current.id) || data[0];
+      });
     });
     return () => unsubscribe();
   }, []);
@@ -60,6 +81,21 @@ const Inbox = () => {
       alert("Message successfully converted to Client record!");
     } catch (err) {
       console.error("Failed to convert message:", err);
+    } finally {
+      setLoadingAction(false);
+    }
+  };
+
+  const handleDeleteMessage = async (msg) => {
+    if (!window.confirm(`Delete message from ${msg.name || msg.email || "this sender"}?`)) return;
+
+    setLoadingAction(true);
+    try {
+      await deleteMessage(msg.id, currentUser.uid);
+      setSelectedMessage((current) => (current?.id === msg.id ? null : current));
+    } catch (err) {
+      console.error("Failed to delete message:", err);
+      alert("Failed to delete message");
     } finally {
       setLoadingAction(false);
     }
@@ -234,6 +270,14 @@ const Inbox = () => {
                   >
                     <Archive className="w-4 h-4" />
                   </button>
+                  <button
+                    disabled={loadingAction}
+                    onClick={() => handleDeleteMessage(selectedMessage)}
+                    className="p-2 sm:p-1.5 text-slate-400 hover:text-red-300 bg-brand-border/30 hover:bg-red-500/10 rounded transition"
+                    title="Delete message"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
                 </div>
               </div>
 
@@ -277,28 +321,22 @@ const Inbox = () => {
               {/* Message Content */}
               <div className="p-4 bg-brand-dark/50 border border-brand-border rounded-lg text-sm text-slate-300 space-y-3">
                 {selectedMessage.type === "project_brief" ? (
-                  <div className="space-y-2">
-                    <p>
-                      <strong>Project Type:</strong>{" "}
-                      {selectedMessage.projectType || "N/A"}
-                    </p>
-                    <p>
-                      <strong>Timeline:</strong>{" "}
-                      {selectedMessage.timeline || "N/A"}
-                    </p>
-                    <p>
-                      <strong>Budget:</strong> {selectedMessage.budget || "N/A"}
-                    </p>
-                    <p>
-                      <strong>Goals:</strong>{" "}
-                      {selectedMessage.mainGoal || "N/A"}
-                    </p>
-                    <p>
-                      <strong>Notes:</strong>{" "}
-                      {selectedMessage.extraNotes ||
-                        selectedMessage.message ||
-                        "None"}
-                    </p>
+                  <div className="grid grid-cols-1 gap-3">
+                    {getProjectBriefFields(selectedMessage).map(
+                      ([label, value]) => (
+                        <div
+                          key={label}
+                          className="rounded-lg border border-brand-border/70 bg-brand-dark/40 p-3"
+                        >
+                          <p className="text-[11px] font-semibold uppercase tracking-wide text-slate-500">
+                            {label}
+                          </p>
+                          <p className="mt-1 whitespace-pre-wrap break-words text-sm text-slate-200">
+                            {formatAnswer(value)}
+                          </p>
+                        </div>
+                      ),
+                    )}
                   </div>
                 ) : (
                   <p className="whitespace-pre-wrap">
