@@ -1,11 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { clientsService } from '../services/clientsService';
+import ClientModal from '../components/ClientModal';
 
 export default function Clients() {
   const [clients, setClients] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
+
+  // Modal controls
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedClient, setSelectedClient] = useState(null);
 
   useEffect(() => {
     loadClients();
@@ -21,6 +26,16 @@ export default function Clients() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleOpenAdd = () => {
+    setSelectedClient(null);
+    setIsModalOpen(true);
+  };
+
+  const handleOpenEdit = (client) => {
+    setSelectedClient(client);
+    setIsModalOpen(true);
   };
 
   const handleStatusChange = async (id, newStatus) => {
@@ -53,28 +68,25 @@ export default function Clients() {
     return matchesSearch && matchesStatus;
   });
 
-  // Metrics
   const totalClientsCount = clients.length;
   const leadsCount = clients.filter((c) => c.status === 'lead').length;
   const activeCount = clients.filter((c) => c.status === 'active').length;
 
   return (
     <div className="space-y-6">
-      {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-white">Clients & Leads CRM</h1>
           <p className="text-slate-400 text-sm">Manage client relationships, inquiry leads, and project contracts.</p>
         </div>
         <button
-          onClick={() => alert('Connect your client add/edit modal')}
+          onClick={handleOpenAdd}
           className="bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold px-4 py-2 rounded-lg text-sm transition self-start sm:self-auto"
         >
           + Add Client
         </button>
       </div>
 
-      {/* Stats Bar */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <div className="bg-slate-900 border border-slate-800 p-5 rounded-xl">
           <span className="text-xs font-semibold uppercase text-slate-400">Total Clients</span>
@@ -90,7 +102,6 @@ export default function Clients() {
         </div>
       </div>
 
-      {/* Filters & Search */}
       <div className="flex flex-col sm:flex-row gap-3 justify-between items-center bg-slate-900 border border-slate-800 p-4 rounded-xl">
         <input
           type="text"
@@ -116,7 +127,6 @@ export default function Clients() {
         </div>
       </div>
 
-      {/* Clients Table */}
       {loading ? (
         <div className="p-8 text-center text-slate-400">Loading client directory...</div>
       ) : filteredClients.length === 0 ? (
@@ -164,7 +174,7 @@ export default function Clients() {
                     </td>
                     <td className="py-3 px-4 text-right space-x-2">
                       <button
-                        onClick={() => alert(`Edit client ${client.id}`)}
+                        onClick={() => handleOpenEdit(client)}
                         className="text-slate-400 hover:text-amber-400 font-medium text-xs px-2 py-1 rounded transition"
                       >
                         Edit
@@ -183,6 +193,14 @@ export default function Clients() {
           </div>
         </div>
       )}
+
+      {/* Slide-over Client Modal */}
+      <ClientModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        clientToEdit={selectedClient}
+        onSaveSuccess={loadClients}
+      />
     </div>
   );
 }

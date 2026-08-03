@@ -1,10 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { projectService } from '../services/projectService';
+import ProjectModal from '../components/ProjectModal';
 
 export default function Projects() {
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('all');
+
+  // Modal controls
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedProject, setSelectedProject] = useState(null);
 
   useEffect(() => {
     loadProjects();
@@ -20,6 +25,16 @@ export default function Projects() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleOpenAdd = () => {
+    setSelectedProject(null);
+    setIsModalOpen(true);
+  };
+
+  const handleOpenEdit = (project) => {
+    setSelectedProject(project);
+    setIsModalOpen(true);
   };
 
   const handleToggleStatus = async (id, currentStatus) => {
@@ -58,7 +73,7 @@ export default function Projects() {
           <p className="text-slate-400 text-sm">Manage your portfolio showcase items and live project status.</p>
         </div>
         <button
-          onClick={() => alert('Connect your project edit modal or navigate to /projects/new')}
+          onClick={handleOpenAdd}
           className="bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold px-4 py-2 rounded-lg text-sm transition self-start sm:self-auto"
         >
           + Add New Project
@@ -130,9 +145,6 @@ export default function Projects() {
                             {tech}
                           </span>
                         ))}
-                        {project.techStack?.length > 3 && (
-                          <span className="text-[10px] text-slate-500 font-mono">+{project.techStack.length - 3}</span>
-                        )}
                       </div>
                     </td>
                     <td className="py-3 px-4">
@@ -149,7 +161,7 @@ export default function Projects() {
                     </td>
                     <td className="py-3 px-4 text-right space-x-2">
                       <button
-                        onClick={() => alert(`Edit project ${project.id}`)}
+                        onClick={() => handleOpenEdit(project)}
                         className="text-slate-400 hover:text-amber-400 font-medium text-xs px-2 py-1 rounded transition"
                       >
                         Edit
@@ -168,6 +180,14 @@ export default function Projects() {
           </div>
         </div>
       )}
+
+      {/* Slide-over Project Form Modal */}
+      <ProjectModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        projectToEdit={selectedProject}
+        onSaveSuccess={loadProjects}
+      />
     </div>
   );
 }

@@ -1,104 +1,135 @@
-import { 
-  collection, 
-  query, 
-  orderBy, 
-  onSnapshot, 
-  doc, 
-  addDoc, 
-  deleteDoc, 
-  serverTimestamp 
-} from 'firebase/firestore';
-import { db } from '../lib/firebase/firebase';
-import { COLLECTIONS, logActivity } from './db';
+import { db } from "../lib/firebase/firebase";
+import {
+  collection,
+  getDocs,
+  addDoc,
+  deleteDoc,
+  doc,
+  onSnapshot,
+  query,
+  orderBy,
+  serverTimestamp,
+} from "firebase/firestore";
 
-const CLOUD_NAME = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
-const UPLOAD_PRESET = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET;
+const MEDIA_COLLECTION = "media";
 
-/**
- * Upload an image file directly to Cloudinary
- */
-export const uploadToCloudinary = async (file, folder = 'kd-studios') => {
-  if (!CLOUD_NAME || !UPLOAD_PRESET) {
-    throw new Error('Cloudinary cloud name or upload preset is missing in .env.local');
-  }
-
-  const formData = new FormData();
-  formData.append('file', file);
-  formData.append('upload_preset', UPLOAD_PRESET);
-  formData.append('folder', folder);
-
-  const response = await fetch(
-    `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`,
-    {
-      method: 'POST',
-      body: formData,
+export const mediaService = {
+  // Get all media items ordered by newest
+  async getAllMedia() {
+    try {
+      const q = query(
+        collection(db, MEDIA_COLLECTION),
+        orderBy("createdAt", "desc"),
+      );
+      const snapshot = await getDocs(q);
+      return snapshot.docs.map((d) => ({ id: d.id, ...d.data() }));
+    } catch (error) {
+      console.error("Error fetching media:", error);
+      throw error;
     }
-  );
+  },
 
-  if (!response.ok) {
-    const errorData = await response.json();
-    throw new Error(errorData.error?.message || 'Failed to upload image to Cloudinary');
+  // Save media record
+  async addMediaRecord(mediaData) {
+    try {
+      const docRef = await addDoc(collection(db, MEDIA_COLLECTION), {
+        name: mediaData.name,
+        url: mediaData.url,
+        type: mediaData.type || "image",
+        size: mediaData.size || "N/A",
+        createdAt: serverTimestamp(),
+      });
+      return docRef.id;
+    } catch (error) {
+      console.error("Error adding media record:", error);
+      throw error;
+    }
+  },
+
+  // Delete media item
+  async deleteMedia(id) {
+    try {
+      await deleteDoc(doc(db, MEDIA_COLLECTION, id));
+    } catch (error) {
+      console.error("Error deleting media:", error);
+      throw error;
+    }
+  },
+};
+
+// --- Additional named helpers used by UI components ---
+
+export async function uploadToCloudinary(file, folder = "projects") {
+  const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
+  const uploadPreset = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET;
+
+  if (!cloudName || !uploadPreset) {
+    throw new Error(
+      "Cloudinary is not configured (check VITE_CLOUDINARY_* env vars)",
+    );
   }
 
-  const data = await response.json();
+  const url = `https://api.cloudinary.com/v1_1/${cloudName}/upload`;
+  const fd = new FormData();
+  fd.append("file", file);
+  fd.append("upload_preset", uploadPreset);
+  fd.append("folder", folder);
+
+  const res = await fetch(url, { method: "POST", body: fd });
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(`Cloudinary upload failed: ${text}`);
+  }
+
+  const data = await res.json();
   return {
-    publicId: data.public_id,
     secureUrl: data.secure_url,
-    format: data.format,
+    publicId: data.public_id,
+    bytes: data.bytes,
     width: data.width,
     height: data.height,
+    format: data.format,
+    raw: data,
   };
-};
+}
 
-/**
- * Save asset metadata into Firestore mediaAssets collection
- */
-export const saveMediaAsset = async (assetData, actorId, altText = '') => {
-  const docRef = await addDoc(collection(db, COLLECTIONS.MEDIA_ASSETS), {
-    publicId: assetData.publicId,
-    secureUrl: assetData.secureUrl,
-    format: assetData.format,
-    width: assetData.width,
-    height: assetData.height,
-    altText,
-    uploadedBy: actorId,
+export async function saveMediaAsset(cloudinaryResult, ownerId, originalName) {
+  const mediaData = {
+    name: originalName || cloudinaryResult.publicId,
+    url: cloudinaryResult.secureUrl,
+    secureUrl: cloudinaryResult.secureUrl,
+    publicId: cloudinaryResult.publicId,
+    size: cloudinaryResult.bytes || null,
+    type: "image",
+    ownerId: ownerId || null,
     createdAt: serverTimestamp(),
-  });
+  };
 
-  await logActivity(
-    actorId, 
-    'UPLOAD_MEDIA', 
-    COLLECTIONS.MEDIA_ASSETS, 
-    docRef.id, 
-    `Uploaded media asset: ${assetData.publicId}`
-  );
+  return await mediaService.addMediaRecord(mediaData);
+}
 
-  return docRef.id;
-};
-
-/**
- * Subscribe to Media Assets in real time
- */
-export const subscribeToMediaAssets = (callback) => {
+export function subscribeToMediaAssets(onUpdate) {
   const q = query(
-    collection(db, COLLECTIONS.MEDIA_ASSETS), 
-    orderBy('createdAt', 'desc')
+    collection(db, MEDIA_COLLECTION),
+    orderBy("createdAt", "desc"),
+  );
+  const unsubscribe = onSnapshot(
+    q,
+    (snapshot) => {
+      const items = snapshot.docs.map((d) => ({ id: d.id, ...d.data() }));
+      onUpdate(items);
+    },
+    (err) => {
+      console.error("Media subscription error:", err);
+    },
   );
 
-  return onSnapshot(q, (snapshot) => {
-    const assets = snapshot.docs.map((docSnap) => ({
-      id: docSnap.id,
-      ...docSnap.data(),
-    }));
-    callback(assets);
-  });
-};
+  return unsubscribe;
+}
 
-/**
- * Delete media record from Firestore
- */
-export const deleteMediaAsset = async (assetId, publicId, actorId) => {
-  const docRef = doc(db, COLLECTIONS.MEDIA_ASSETS, assetId);
-  await deleteDoc(docRef);
-  await logActivity(actorId, 'DELETE_MEDIA', COLLECTIONS.MEDIA_ASSETS, assetId, `Deleted media metadata for ${publicId}`);
-};
+export async function deleteMediaAsset(id /*, publicId, userId */) {
+  // Note: Cloudinary asset deletion requires server-side credentials.
+  // Here we remove the Firestore record. If you have a server endpoint
+  // to remove Cloudinary resources, call it here with publicId and userId.
+  return await mediaService.deleteMedia(id);
+}

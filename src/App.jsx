@@ -1,17 +1,17 @@
-import React from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { AuthProvider } from './context/AuthContext';
-import ProtectedRoute from '../src/routes/ProtectedRoute';
-import DashboardLayout from '../src/components/DashboardLayout';
-import LoginPage from '../src/pages/auth/LoginPage';
-import Overview from './pages/Overview';
-import Inbox from './pages/Inbox';
-import Settings from './pages/Settings';
-import Projects from './pages/Projects';
-import MediaLibrary from './pages/MediaLibrary';
-import Blog from './pages/Blog';
-import Payments from './pages/Payments';
-import Clients from './pages/Clients';
+import React from "react";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { AuthProvider } from "./context/AuthContext";
+import ProtectedRoute from "./routes/ProtectedRoute";
+import DashboardLayout from "./components/DashboardLayout";
+import LoginPage from "./pages/auth/LoginPage";
+import Overview from "./pages/Overview";
+import Inbox from "./pages/Inbox";
+import Settings from "./pages/Settings";
+import Projects from "./pages/Projects";
+import MediaLibrary from "./pages/MediaLibrary";
+import Blog from "./pages/Blog";
+import Payments from "./pages/Payments";
+import Clients from "./pages/Clients";
 
 function App() {
   return (

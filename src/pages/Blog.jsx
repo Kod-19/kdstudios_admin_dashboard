@@ -1,10 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { blogService } from '../services/blogService';
+import BlogModal from '../components/BlogModal';
 
 export default function Blog() {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('all');
+
+  // Modal controls
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedPost, setSelectedPost] = useState(null);
 
   useEffect(() => {
     loadPosts();
@@ -20,6 +25,16 @@ export default function Blog() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleOpenAdd = () => {
+    setSelectedPost(null);
+    setIsModalOpen(true);
+  };
+
+  const handleOpenEdit = (post) => {
+    setSelectedPost(post);
+    setIsModalOpen(true);
   };
 
   const handleToggleStatus = async (id, currentStatus) => {
@@ -51,21 +66,19 @@ export default function Blog() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-white">Blog & Articles CMS</h1>
           <p className="text-slate-400 text-sm">Write articles, studio updates, and technical notes.</p>
         </div>
         <button
-          onClick={() => alert('Connect your post edit modal or navigate to /blog/new')}
+          onClick={handleOpenAdd}
           className="bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold px-4 py-2 rounded-lg text-sm transition self-start sm:self-auto"
         >
           + Write New Post
         </button>
       </div>
 
-      {/* Filter Tabs */}
       <div className="flex items-center gap-2 border-b border-slate-800 pb-3">
         {['all', 'published', 'draft'].map((status) => (
           <button
@@ -82,7 +95,6 @@ export default function Blog() {
         ))}
       </div>
 
-      {/* Posts List */}
       {loading ? (
         <div className="p-8 text-center text-slate-400">Loading blog posts...</div>
       ) : filteredPosts.length === 0 ? (
@@ -146,7 +158,7 @@ export default function Blog() {
                     </td>
                     <td className="py-3 px-4 text-right space-x-2">
                       <button
-                        onClick={() => alert(`Edit post ${post.id}`)}
+                        onClick={() => handleOpenEdit(post)}
                         className="text-slate-400 hover:text-amber-400 font-medium text-xs px-2 py-1 rounded transition"
                       >
                         Edit
@@ -165,6 +177,14 @@ export default function Blog() {
           </div>
         </div>
       )}
+
+      {/* Slide-over Blog Modal */}
+      <BlogModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        postToEdit={selectedPost}
+        onSaveSuccess={loadPosts}
+      />
     </div>
   );
 }
