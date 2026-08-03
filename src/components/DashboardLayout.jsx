@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Outlet, NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import {
@@ -6,7 +6,6 @@ import {
   Inbox,
   FolderKanban,
   FileText,
-  CreditCard,
   Users,
   Image as ImageIcon,
   Settings,
@@ -34,7 +33,6 @@ const DashboardLayout = () => {
     { label: "Inbox", path: "/dashboard/inbox", icon: Inbox },
     { label: "Projects", path: "/dashboard/projects", icon: FolderKanban },
     { label: "Blog & Updates", path: "/dashboard/blog", icon: FileText },
-    { label: "Payments", path: "/dashboard/payments", icon: CreditCard },
     { label: "Clients", path: "/dashboard/clients", icon: Users },
     { label: "Media Library", path: "/dashboard/media", icon: ImageIcon },
     { label: "Content Studio", path: "/dashboard/content", icon: FileText },
@@ -44,7 +42,7 @@ const DashboardLayout = () => {
   return (
     <div className="min-h-screen bg-brand-dark flex flex-col md:flex-row text-slate-200">
       {/* Mobile Top Header */}
-      <div className="md:hidden flex items-center justify-between p-4 bg-brand-card border-b border-brand-border">
+      <div className="md:hidden flex items-center justify-between p-4 bg-slate-950/95 shadow-lg border-b border-brand-border backdrop-blur-sm">
         <h1 className="font-bold text-white tracking-wider">
           KD STUDIOS ADMIN
         </h1>
@@ -63,7 +61,7 @@ const DashboardLayout = () => {
       {/* Sidebar Navigation */}
       <aside
         className={`
-        fixed md:static inset-y-0 left-0 z-50 w-64 bg-brand-card border-r border-brand-border flex flex-col justify-between transition-transform duration-200 ease-in-out
+        fixed md:static inset-y-0 left-0 z-50 w-64 bg-slate-950/95 shadow-2xl border-r border-brand-border flex flex-col justify-between transition-transform duration-200 ease-in-out backdrop-blur-sm
         ${mobileMenuOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"}
       `}
       >

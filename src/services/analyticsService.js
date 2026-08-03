@@ -6,16 +6,15 @@ import { db } from '../lib/firebase/firebase';
  */
 export const analyticsService = {
   /**
-   * Fetch aggregated metrics across messages, projects, payments, and clients.
+   * Fetch aggregated metrics across messages, projects, and clients.
    * 
    * @returns {Promise<Object>} Metrics summary object
    */
   async getOverviewMetrics() {
     try {
-      const [messagesSnap, projectsSnap, paymentsSnap, clientsSnap] = await Promise.all([
+      const [messagesSnap, projectsSnap, clientsSnap] = await Promise.all([
         getDocs(query(collection(db, 'messages'), where('status', '==', 'unread'))),
         getDocs(collection(db, 'projects')),
-        getDocs(collection(db, 'payments')),
         getDocs(collection(db, 'clients'))
       ]);
 
@@ -34,16 +33,6 @@ export const analyticsService = {
         }
       });
 
-      // Revenue aggregation (summing 'success' or 'verified' payments in GHS)
-      const totalRevenueGhs = paymentsSnap.docs.reduce((sum, doc) => {
-        const payment = doc.data();
-        if (payment.status === 'success' || payment.status === 'verified') {
-          const amount = payment.amountGhs || (payment.amountPesewas ? payment.amountPesewas / 100 : 0);
-          return sum + Number(amount || 0);
-        }
-        return sum;
-      }, 0);
-
       // Total clients count
       const totalClientsCount = clientsSnap.size;
 
@@ -51,7 +40,6 @@ export const analyticsService = {
         unreadMessagesCount,
         publishedProjectsCount,
         draftProjectsCount,
-        totalRevenueGhs,
         totalClientsCount
       };
     } catch (error) {
@@ -68,17 +56,30 @@ export const analyticsService = {
    */
   async getRecentActivity(activityLimit = 6) {
     try {
-      const q = query(
+      const activityQuery = query(
         collection(db, 'activityLogs'),
         orderBy('createdAt', 'desc'),
         limit(activityLimit)
       );
-      const snapshot = await getDocs(q);
+      const [activityResult] = await Promise.allSettled([
+        getDocs(activityQuery)
+      ]);
 
-      return snapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data()
-      }));
+      const activityItems =
+        activityResult.status === 'fulfilled'
+          ? activityResult.value.docs.map((doc) => ({
+              id: doc.id,
+              ...doc.data()
+            }))
+          : [];
+
+      return activityItems
+        .sort((a, b) => {
+          const aTime = a.createdAt?.toDate ? a.createdAt.toDate().getTime() : 0;
+          const bTime = b.createdAt?.toDate ? b.createdAt.toDate().getTime() : 0;
+          return bTime - aTime;
+        })
+        .slice(0, activityLimit);
     } catch (error) {
       console.error('Error fetching recent activity logs:', error);
       // Return empty array on failure so UI loads gracefully without crashing

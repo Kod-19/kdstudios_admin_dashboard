@@ -5,8 +5,8 @@ import {
   getDoc,
   updateDoc,
   query,
+  onSnapshot,
   orderBy,
-  where,
   serverTimestamp,
 } from "firebase/firestore";
 import { db } from "../lib/firebase/firebase";
@@ -33,6 +33,29 @@ export const paymentService = {
       console.error("Error fetching payments:", error);
       throw error;
     }
+  },
+
+  subscribeToPayments(onPayments, onError) {
+    const q = query(
+      collection(db, PAYMENTS_COLLECTION),
+      orderBy("createdAt", "desc"),
+    );
+
+    return onSnapshot(
+      q,
+      (snapshot) => {
+        onPayments(
+          snapshot.docs.map((doc) => ({
+            id: doc.id,
+            ...doc.data(),
+          })),
+        );
+      },
+      (error) => {
+        console.error("Error listening to payments:", error);
+        if (onError) onError(error);
+      },
+    );
   },
 
   /**

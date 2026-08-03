@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { paymentService } from '../services/paymentsService';
 
 export default function Payments() {
@@ -6,10 +6,6 @@ export default function Payments() {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
-
-  useEffect(() => {
-    loadPayments();
-  }, []);
 
   const loadPayments = async () => {
     setLoading(true);
@@ -23,6 +19,20 @@ export default function Payments() {
     }
   };
 
+  useEffect(() => {
+    const unsubscribe = paymentService.subscribeToPayments(
+      (data) => {
+        setPayments(data);
+        setLoading(false);
+      },
+      () => {
+        loadPayments();
+      }
+    );
+
+    return () => unsubscribe();
+  }, []);
+
   const handleStatusChange = async (id, currentStatus) => {
     const nextStatus = currentStatus === 'success' ? 'verified' : 'success';
     try {
@@ -30,7 +40,7 @@ export default function Payments() {
       setPayments((prev) =>
         prev.map((p) => (p.id === id ? { ...p, status: nextStatus } : p))
       );
-    } catch (err) {
+    } catch {
       alert('Failed to update status');
     }
   };

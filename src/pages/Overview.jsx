@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { analyticsService } from "../services/analyticsService";
 
@@ -8,14 +8,9 @@ export default function Overview() {
     unreadMessagesCount: 0,
     publishedProjectsCount: 0,
     draftProjectsCount: 0,
-    totalRevenueGhs: 0,
     totalClientsCount: 0,
   });
   const [recentActivity, setRecentActivity] = useState([]);
-
-  useEffect(() => {
-    loadDashboardData();
-  }, []);
 
   const loadDashboardData = async () => {
     setLoading(true);
@@ -33,6 +28,10 @@ export default function Overview() {
     }
   };
 
+  useEffect(() => {
+    loadDashboardData();
+  }, []);
+
   if (loading) {
     return (
       <div className="p-8 text-center text-slate-400">
@@ -43,7 +42,6 @@ export default function Overview() {
 
   return (
     <div className="space-y-8">
-      {/* Header */}
       <div>
         <h1 className="text-2xl font-bold text-white">Dashboard Overview</h1>
         <p className="text-slate-400 text-sm">
@@ -51,9 +49,7 @@ export default function Overview() {
         </p>
       </div>
 
-      {/* Metrics Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {/* Unread Messages */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <div className="bg-slate-900 border border-slate-800 p-5 rounded-xl">
           <div className="flex justify-between items-center">
             <span className="text-xs font-semibold uppercase text-slate-400">
@@ -68,30 +64,10 @@ export default function Overview() {
             to="/dashboard/inbox"
             className="text-xs text-amber-400 hover:underline mt-2 inline-block"
           >
-            View Inbox →
+            View Inbox
           </Link>
         </div>
 
-        {/* Total Revenue */}
-        <div className="bg-slate-900 border border-slate-800 p-5 rounded-xl">
-          <div className="flex justify-between items-center">
-            <span className="text-xs font-semibold uppercase text-slate-400">
-              Total Revenue
-            </span>
-            <span className="h-2 w-2 rounded-full bg-emerald-400"></span>
-          </div>
-          <p className="text-3xl font-extrabold text-emerald-400 mt-3">
-            GHS {metrics.totalRevenueGhs.toLocaleString()}
-          </p>
-          <Link
-            to="/dashboard/payments"
-            className="text-xs text-slate-400 hover:underline mt-2 inline-block"
-          >
-            View Payments →
-          </Link>
-        </div>
-
-        {/* Portfolio Projects */}
         <div className="bg-slate-900 border border-slate-800 p-5 rounded-xl">
           <div className="flex justify-between items-center">
             <span className="text-xs font-semibold uppercase text-slate-400">
@@ -108,11 +84,10 @@ export default function Overview() {
             to="/dashboard/projects"
             className="text-xs text-slate-400 hover:underline mt-2 inline-block"
           >
-            Manage Projects →
+            Manage Projects
           </Link>
         </div>
 
-        {/* Total Clients */}
         <div className="bg-slate-900 border border-slate-800 p-5 rounded-xl">
           <div className="flex justify-between items-center">
             <span className="text-xs font-semibold uppercase text-slate-400">
@@ -127,12 +102,11 @@ export default function Overview() {
             to="/dashboard/clients"
             className="text-xs text-slate-400 hover:underline mt-2 inline-block"
           >
-            View Clients →
+            View Clients
           </Link>
         </div>
       </div>
 
-      {/* Quick Actions */}
       <div className="bg-slate-900 border border-slate-800 rounded-xl p-6">
         <h2 className="text-md font-bold text-white mb-4">Quick Actions</h2>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
@@ -163,7 +137,6 @@ export default function Overview() {
         </div>
       </div>
 
-      {/* Recent Activity Log */}
       <div className="bg-slate-900 border border-slate-800 rounded-xl p-6">
         <h2 className="text-md font-bold text-white mb-4">Recent Activity</h2>
         {recentActivity.length === 0 ? (
@@ -193,7 +166,7 @@ export default function Overview() {
                           hour: "2-digit",
                           minute: "2-digit",
                         })
-                    : "—"}
+                    : "-"}
                 </span>
               </div>
             ))}

@@ -1,4 +1,3 @@
-import React from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
 import ProtectedRoute from "./routes/ProtectedRoute";
@@ -10,7 +9,6 @@ import Settings from "./pages/Settings";
 import Projects from "./pages/Projects";
 import MediaLibrary from "./pages/MediaLibrary";
 import Blog from "./pages/Blog";
-import Payments from "./pages/Payments";
 import Clients from "./pages/Clients";
 import ContentStudio from "./pages/ContentStudio";
 
@@ -25,7 +23,6 @@ function App() {
           {/* Protected Admin Routes */}
           <Route element={<ProtectedRoute />}>
             <Route path="/dashboard" element={<DashboardLayout />}>
-              <Route path="payments" element={<Payments />} />
               <Route path="clients" element={<Clients />} />
               <Route path="blog" element={<Blog />} />
               <Route index element={<Overview />} />
