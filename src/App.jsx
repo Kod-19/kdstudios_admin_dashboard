@@ -12,6 +12,7 @@ import MediaLibrary from "./pages/MediaLibrary";
 import Blog from "./pages/Blog";
 import Payments from "./pages/Payments";
 import Clients from "./pages/Clients";
+import ContentStudio from "./pages/ContentStudio";
 
 function App() {
   return (
@@ -29,9 +30,13 @@ function App() {
               <Route path="blog" element={<Blog />} />
               <Route index element={<Overview />} />
               <Route path="inbox" element={<Inbox />} />
+              <Route path="messages" element={<Inbox />} />
               <Route path="settings" element={<Settings />} />
               <Route path="media" element={<MediaLibrary />} />
               <Route path="projects" element={<Projects />} />
+              <Route path="projects/new" element={<Projects initialMode="create" />} />
+              <Route path="blog/new" element={<Blog initialMode="create" />} />
+              <Route path="content" element={<ContentStudio />} />
             </Route>
           </Route>
 

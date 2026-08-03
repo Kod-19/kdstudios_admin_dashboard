@@ -1,19 +1,19 @@
-import React, { useState } from 'react';
-import { Outlet, NavLink, useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
-import { 
-  LayoutDashboard, 
-  Inbox, 
-  FolderKanban, 
-  FileText, 
-  CreditCard, 
-  Users, 
-  Image as ImageIcon, 
-  Settings, 
-  LogOut, 
-  Menu, 
-  X 
-} from 'lucide-react';
+import React, { useState } from "react";
+import { Outlet, NavLink, useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
+import {
+  LayoutDashboard,
+  Inbox,
+  FolderKanban,
+  FileText,
+  CreditCard,
+  Users,
+  Image as ImageIcon,
+  Settings,
+  LogOut,
+  Menu,
+  X,
+} from "lucide-react";
 
 const DashboardLayout = () => {
   const { logout, currentUser } = useAuth();
@@ -23,45 +23,58 @@ const DashboardLayout = () => {
   const handleLogout = async () => {
     try {
       await logout();
-      navigate('/login');
+      navigate("/login");
     } catch (error) {
-      console.error('Failed to log out', error);
+      console.error("Failed to log out", error);
     }
   };
 
   const navItems = [
-    { label: 'Overview', path: '/dashboard', icon: LayoutDashboard },
-    { label: 'Inbox', path: '/dashboard/inbox', icon: Inbox },
-    { label: 'Projects', path: '/dashboard/projects', icon: FolderKanban },
-    { label: 'Blog & Updates', path: '/dashboard/blog', icon: FileText },
-    { label: 'Payments', path: '/dashboard/payments', icon: CreditCard },
-    { label: 'Clients', path: '/dashboard/clients', icon: Users },
-    { label: 'Media Library', path: '/dashboard/media', icon: ImageIcon },
-    { label: 'Settings', path: '/dashboard/settings', icon: Settings },
+    { label: "Overview", path: "/dashboard", icon: LayoutDashboard },
+    { label: "Inbox", path: "/dashboard/inbox", icon: Inbox },
+    { label: "Projects", path: "/dashboard/projects", icon: FolderKanban },
+    { label: "Blog & Updates", path: "/dashboard/blog", icon: FileText },
+    { label: "Payments", path: "/dashboard/payments", icon: CreditCard },
+    { label: "Clients", path: "/dashboard/clients", icon: Users },
+    { label: "Media Library", path: "/dashboard/media", icon: ImageIcon },
+    { label: "Content Studio", path: "/dashboard/content", icon: FileText },
+    { label: "Settings", path: "/dashboard/settings", icon: Settings },
   ];
 
   return (
     <div className="min-h-screen bg-brand-dark flex flex-col md:flex-row text-slate-200">
       {/* Mobile Top Header */}
       <div className="md:hidden flex items-center justify-between p-4 bg-brand-card border-b border-brand-border">
-        <h1 className="font-bold text-white tracking-wider">KD STUDIOS ADMIN</h1>
-        <button 
+        <h1 className="font-bold text-white tracking-wider">
+          KD STUDIOS ADMIN
+        </h1>
+        <button
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           className="text-slate-400 hover:text-white"
         >
-          {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+          {mobileMenuOpen ? (
+            <X className="w-6 h-6" />
+          ) : (
+            <Menu className="w-6 h-6" />
+          )}
         </button>
       </div>
 
       {/* Sidebar Navigation */}
-      <aside className={`
+      <aside
+        className={`
         fixed md:static inset-y-0 left-0 z-50 w-64 bg-brand-card border-r border-brand-border flex flex-col justify-between transition-transform duration-200 ease-in-out
-        ${mobileMenuOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
-      `}>
+        ${mobileMenuOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"}
+      `}
+      >
         <div>
           <div className="hidden md:flex items-center justify-between p-6 border-b border-brand-border">
-            <h1 className="font-bold text-lg text-white tracking-wider">KD STUDIOS</h1>
-            <span className="text-xs bg-brand-accent/10 text-brand-accent px-2 py-0.5 rounded font-mono">v1.0</span>
+            <h1 className="font-bold text-lg text-white tracking-wider">
+              KD STUDIOS
+            </h1>
+            <span className="text-xs bg-brand-accent/10 text-brand-accent px-2 py-0.5 rounded font-mono">
+              v1.0
+            </span>
           </div>
 
           <nav className="p-4 space-y-1">
@@ -71,13 +84,15 @@ const DashboardLayout = () => {
                 <NavLink
                   key={item.path}
                   to={item.path}
-                  end={item.path === '/dashboard'}
+                  end={item.path === "/dashboard"}
                   onClick={() => setMobileMenuOpen(false)}
                   className={({ isActive }) => `
                     flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition
-                    ${isActive 
-                      ? 'bg-brand-accent/10 text-brand-accent border border-brand-accent/20' 
-                      : 'text-slate-400 hover:text-slate-200 hover:bg-brand-border/40'}
+                    ${
+                      isActive
+                        ? "bg-brand-accent/10 text-brand-accent border border-brand-accent/20"
+                        : "text-slate-400 hover:text-slate-200 hover:bg-brand-border/40"
+                    }
                   `}
                 >
                   <Icon className="w-5 h-5 shrink-0" />
@@ -92,7 +107,9 @@ const DashboardLayout = () => {
         <div className="p-4 border-t border-brand-border">
           <div className="mb-3 px-3">
             <p className="text-xs text-slate-500 font-medium">Logged in as</p>
-            <p className="text-xs text-slate-300 font-semibold truncate">{currentUser?.email}</p>
+            <p className="text-xs text-slate-300 font-semibold truncate">
+              {currentUser?.email}
+            </p>
           </div>
           <button
             onClick={handleLogout}

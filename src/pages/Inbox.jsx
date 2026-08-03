@@ -1,28 +1,28 @@
-import React, { useState, useEffect } from 'react';
-import { useAuth } from '../context/AuthContext';
-import { 
-  subscribeToMessages, 
-  updateMessageStatus, 
-  convertMessageToClient 
-} from '../services/messageService';
-import { 
-  Mail, 
-  CheckCircle, 
-  Archive, 
-  UserPlus, 
-  MessageSquare, 
-  Briefcase, 
-  Clock, 
-  Search, 
-  Filter 
-} from 'lucide-react';
+import React, { useState, useEffect } from "react";
+import { useAuth } from "../context/AuthContext";
+import {
+  subscribeToMessages,
+  updateMessageStatus,
+  convertMessageToClient,
+} from "../services/messageService";
+import {
+  Mail,
+  CheckCircle,
+  Archive,
+  UserPlus,
+  MessageSquare,
+  Briefcase,
+  Clock,
+  Search,
+  Filter,
+} from "lucide-react";
 
 const Inbox = () => {
   const { currentUser } = useAuth();
   const [messages, setMessages] = useState([]);
   const [selectedMessage, setSelectedMessage] = useState(null);
-  const [filter, setFilter] = useState('all'); // all, unread, contact, brief, archived
-  const [searchTerm, setSearchTerm] = useState('');
+  const [filter, setFilter] = useState("all"); // all, unread, contact, brief, archived
+  const [searchTerm, setSearchTerm] = useState("");
   const [loadingAction, setLoadingAction] = useState(false);
 
   useEffect(() => {
@@ -37,8 +37,8 @@ const Inbox = () => {
 
   const handleSelectMessage = (msg) => {
     setSelectedMessage(msg);
-    if (msg.status === 'unread') {
-      updateMessageStatus(msg.id, 'read', currentUser.uid);
+    if (msg.status === "unread") {
+      updateMessageStatus(msg.id, "read", currentUser.uid);
     }
   };
 
@@ -47,7 +47,7 @@ const Inbox = () => {
     try {
       await updateMessageStatus(msgId, status, currentUser.uid);
     } catch (err) {
-      console.error('Failed to update message status:', err);
+      console.error("Failed to update message status:", err);
     } finally {
       setLoadingAction(false);
     }
@@ -57,31 +57,31 @@ const Inbox = () => {
     setLoadingAction(true);
     try {
       await convertMessageToClient(msg, currentUser.uid);
-      alert('Message successfully converted to Client record!');
+      alert("Message successfully converted to Client record!");
     } catch (err) {
-      console.error('Failed to convert message:', err);
+      console.error("Failed to convert message:", err);
     } finally {
       setLoadingAction(false);
     }
   };
 
   const filteredMessages = messages.filter((msg) => {
-    const matchesSearch = 
+    const matchesSearch =
       msg.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       msg.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       msg.subject?.toLowerCase().includes(searchTerm.toLowerCase());
 
     if (!matchesSearch) return false;
 
-    if (filter === 'unread') return msg.status === 'unread';
-    if (filter === 'contact') return msg.type === 'contact' || !msg.type;
-    if (filter === 'brief') return msg.type === 'project_brief';
-    if (filter === 'archived') return msg.status === 'archived';
+    if (filter === "unread") return msg.status === "unread";
+    if (filter === "contact") return msg.type === "contact" || !msg.type;
+    if (filter === "brief") return msg.type === "project_brief";
+    if (filter === "archived") return msg.status === "archived";
 
-    return msg.status !== 'archived'; // Default hides archived
+    return msg.status !== "archived"; // Default hides archived
   });
 
-  const unreadCount = messages.filter((m) => m.status === 'unread').length;
+  const unreadCount = messages.filter((m) => m.status === "unread").length;
 
   return (
     <div className="space-y-6">
@@ -95,7 +95,9 @@ const Inbox = () => {
               </span>
             )}
           </h1>
-          <p className="text-slate-400 text-sm mt-1">Manage contact inquiries and project brief submissions</p>
+          <p className="text-slate-400 text-sm mt-1">
+            Manage contact inquiries and project brief submissions
+          </p>
         </div>
 
         {/* Search */}
@@ -115,19 +117,19 @@ const Inbox = () => {
       <div className="flex items-center gap-2 border-b border-brand-border pb-3 overflow-x-auto">
         <Filter className="w-4 h-4 text-slate-500 shrink-0" />
         {[
-          { id: 'all', label: 'All Messages' },
-          { id: 'unread', label: 'Unread' },
-          { id: 'brief', label: 'Project Briefs' },
-          { id: 'contact', label: 'Contact Inquiries' },
-          { id: 'archived', label: 'Archived' },
+          { id: "all", label: "All Messages" },
+          { id: "unread", label: "Unread" },
+          { id: "brief", label: "Project Briefs" },
+          { id: "contact", label: "Contact Inquiries" },
+          { id: "archived", label: "Archived" },
         ].map((tab) => (
           <button
             key={tab.id}
             onClick={() => setFilter(tab.id)}
             className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition ${
               filter === tab.id
-                ? 'bg-brand-accent/20 text-brand-accent border border-brand-accent/30'
-                : 'text-slate-400 hover:bg-brand-card'
+                ? "bg-brand-accent/20 text-brand-accent border border-brand-accent/30"
+                : "text-slate-400 hover:bg-brand-card"
             }`}
           >
             {tab.label}
@@ -151,28 +153,44 @@ const Inbox = () => {
                 onClick={() => handleSelectMessage(msg)}
                 className={`p-4 cursor-pointer transition ${
                   selectedMessage?.id === msg.id
-                    ? 'bg-brand-border/40 border-l-4 border-l-brand-accent'
-                    : 'hover:bg-brand-border/20'
+                    ? "bg-brand-border/40 border-l-4 border-l-brand-accent"
+                    : "hover:bg-brand-border/20"
                 }`}
               >
-                <div className="flex items-center justify-between mb-1">
-                  <span className="font-medium text-white text-sm truncate">{msg.name || 'Anonymous'}</span>
-                  <span className="text-[10px] text-slate-500">
-                    {msg.createdAt?.toDate ? msg.createdAt.toDate().toLocaleDateString() : 'Recent'}
+                <div className="flex items-center justify-between mb-1 gap-2">
+                  <span className="font-medium text-white text-sm truncate">
+                    {msg.name || "Anonymous"}
+                  </span>
+                  <span className="text-[10px] text-slate-500 whitespace-nowrap">
+                    {msg.createdAt?.toDate
+                      ? new Date(msg.createdAt.toDate()).toLocaleString([], {
+                          month: "short",
+                          day: "numeric",
+                          hour: "numeric",
+                          minute: "2-digit",
+                        })
+                      : "Recent"}
                   </span>
                 </div>
                 <p className="text-xs text-slate-400 font-medium truncate mb-1">
-                  {msg.subject || (msg.type === 'project_brief' ? 'New Project Brief' : 'Contact Submission')}
+                  {msg.subject ||
+                    (msg.type === "project_brief"
+                      ? "New Project Brief"
+                      : "Contact Submission")}
                 </p>
                 <div className="flex items-center justify-between mt-2">
-                  <span className={`text-[10px] px-2 py-0.5 rounded font-semibold ${
-                    msg.type === 'project_brief' 
-                      ? 'bg-purple-500/10 text-purple-400 border border-purple-500/20' 
-                      : 'bg-blue-500/10 text-blue-400 border border-blue-500/20'
-                  }`}>
-                    {msg.type === 'project_brief' ? 'Project Brief' : 'Contact Form'}
+                  <span
+                    className={`text-[10px] px-2 py-0.5 rounded font-semibold ${
+                      msg.type === "project_brief"
+                        ? "bg-purple-500/10 text-purple-400 border border-purple-500/20"
+                        : "bg-blue-500/10 text-blue-400 border border-blue-500/20"
+                    }`}
+                  >
+                    {msg.type === "project_brief"
+                      ? "Project Brief"
+                      : "Contact Form"}
                   </span>
-                  {msg.status === 'unread' && (
+                  {msg.status === "unread" && (
                     <span className="w-2 h-2 rounded-full bg-brand-accent"></span>
                   )}
                 </div>
@@ -193,7 +211,7 @@ const Inbox = () => {
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
-                  {selectedMessage.status !== 'converted' && (
+                  {selectedMessage.status !== "converted" && (
                     <button
                       disabled={loadingAction}
                       onClick={() => handleConvertToClient(selectedMessage)}
@@ -204,7 +222,14 @@ const Inbox = () => {
                   )}
                   <button
                     disabled={loadingAction}
-                    onClick={() => handleStatusChange(selectedMessage.id, selectedMessage.status === 'archived' ? 'read' : 'archived')}
+                    onClick={() =>
+                      handleStatusChange(
+                        selectedMessage.id,
+                        selectedMessage.status === "archived"
+                          ? "read"
+                          : "archived",
+                      )
+                    }
                     className="p-1.5 text-slate-400 hover:text-white bg-brand-border/30 hover:bg-brand-border rounded transition"
                   >
                     <Archive className="w-4 h-4" />
@@ -215,27 +240,69 @@ const Inbox = () => {
               {/* Message Details */}
               <div>
                 <h2 className="text-lg font-bold text-white mb-1">
-                  {selectedMessage.subject || (selectedMessage.type === 'project_brief' ? 'Project Brief Inquiry' : 'Contact Submission')}
+                  {selectedMessage.subject ||
+                    (selectedMessage.type === "project_brief"
+                      ? "Project Brief Inquiry"
+                      : "Contact Submission")}
                 </h2>
                 <div className="text-xs text-slate-400 space-y-1 mt-2">
-                  <p><strong className="text-slate-300">From:</strong> {selectedMessage.name} ({selectedMessage.email})</p>
-                  {selectedMessage.phone && <p><strong className="text-slate-300">Phone:</strong> {selectedMessage.phone}</p>}
-                  {selectedMessage.businessName && <p><strong className="text-slate-300">Business:</strong> {selectedMessage.businessName}</p>}
+                  <p>
+                    <strong className="text-slate-300">From:</strong>{" "}
+                    {selectedMessage.name} ({selectedMessage.email})
+                  </p>
+                  {selectedMessage.phone && (
+                    <p>
+                      <strong className="text-slate-300">Phone:</strong>{" "}
+                      {selectedMessage.phone}
+                    </p>
+                  )}
+                  {selectedMessage.businessName && (
+                    <p>
+                      <strong className="text-slate-300">Business:</strong>{" "}
+                      {selectedMessage.businessName}
+                    </p>
+                  )}
+                  <p>
+                    <strong className="text-slate-300">Received:</strong>{" "}
+                    {selectedMessage.createdAt?.toDate
+                      ? new Date(
+                          selectedMessage.createdAt.toDate(),
+                        ).toLocaleString()
+                      : "Just now"}
+                  </p>
                 </div>
               </div>
 
               {/* Message Content */}
               <div className="p-4 bg-brand-dark/50 border border-brand-border rounded-lg text-sm text-slate-300 space-y-3">
-                {selectedMessage.type === 'project_brief' ? (
+                {selectedMessage.type === "project_brief" ? (
                   <div className="space-y-2">
-                    <p><strong>Project Type:</strong> {selectedMessage.projectType || 'N/A'}</p>
-                    <p><strong>Timeline:</strong> {selectedMessage.timeline || 'N/A'}</p>
-                    <p><strong>Budget:</strong> {selectedMessage.budget || 'N/A'}</p>
-                    <p><strong>Goals:</strong> {selectedMessage.mainGoal || 'N/A'}</p>
-                    <p><strong>Notes:</strong> {selectedMessage.extraNotes || selectedMessage.message || 'None'}</p>
+                    <p>
+                      <strong>Project Type:</strong>{" "}
+                      {selectedMessage.projectType || "N/A"}
+                    </p>
+                    <p>
+                      <strong>Timeline:</strong>{" "}
+                      {selectedMessage.timeline || "N/A"}
+                    </p>
+                    <p>
+                      <strong>Budget:</strong> {selectedMessage.budget || "N/A"}
+                    </p>
+                    <p>
+                      <strong>Goals:</strong>{" "}
+                      {selectedMessage.mainGoal || "N/A"}
+                    </p>
+                    <p>
+                      <strong>Notes:</strong>{" "}
+                      {selectedMessage.extraNotes ||
+                        selectedMessage.message ||
+                        "None"}
+                    </p>
                   </div>
                 ) : (
-                  <p className="whitespace-pre-wrap">{selectedMessage.message || 'No body provided.'}</p>
+                  <p className="whitespace-pre-wrap">
+                    {selectedMessage.message || "No body provided."}
+                  </p>
                 )}
               </div>
             </div>
