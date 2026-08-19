@@ -158,14 +158,14 @@ export default function Overview() {
                     {activity.entityType}
                   </span>
                 </div>
-                <span className="text-xs text-slate-400">
+                <span className="text-xs text-slate-400 text-right">
                   {activity.createdAt?.toDate
-                    ? activity.createdAt
-                        .toDate()
-                        .toLocaleTimeString([], {
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        })
+                    ? activity.createdAt.toDate().toLocaleString([], {
+                        month: "short",
+                        day: "numeric",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })
                     : "-"}
                 </span>
               </div>
@@ -176,3 +176,4 @@ export default function Overview() {
     </div>
   );
 }
+
