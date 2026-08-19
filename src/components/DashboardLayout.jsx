@@ -134,36 +134,7 @@ const DashboardLayout = () => {
         <Outlet />
       </main>
 
-      <nav className="fixed inset-x-0 bottom-0 z-30 grid grid-cols-5 border-t border-brand-border bg-slate-950/95 px-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] pt-2 shadow-2xl backdrop-blur md:hidden">
-        {navItems.slice(0, 4).map((item) => {
-          const Icon = item.icon;
-          return (
-            <NavLink
-              key={item.path}
-              to={item.path}
-              end={item.path === "/dashboard"}
-              className={({ isActive }) =>
-                `flex min-w-0 flex-col items-center gap-1 rounded-lg px-1 py-1.5 text-[10px] font-semibold transition ${
-                  isActive
-                    ? "text-brand-accent bg-brand-accent/10"
-                    : "text-slate-500 hover:text-slate-200"
-                }`
-              }
-            >
-              <Icon className="h-5 w-5 shrink-0" />
-              <span className="w-full truncate text-center">{item.label}</span>
-            </NavLink>
-          );
-        })}
-        <button
-          type="button"
-          onClick={() => setMobileMenuOpen(true)}
-          className="flex min-w-0 flex-col items-center gap-1 rounded-lg px-1 py-1.5 text-[10px] font-semibold text-slate-500 transition hover:text-slate-200"
-        >
-          <Menu className="h-5 w-5 shrink-0" />
-          <span className="w-full truncate text-center">More</span>
-        </button>
-      </nav>
+     
     </div>
   );
 };
