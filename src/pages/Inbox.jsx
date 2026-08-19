@@ -144,13 +144,13 @@ const Inbox = () => {
             placeholder="Search messages..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-9 pr-4 py-2 bg-brand-card border border-brand-border rounded-lg text-sm text-white placeholder-slate-500 focus:outline-none focus:border-brand-accent"
+            className="w-full pl-9 pr-4 py-2 bg-brand-card rounded-lg text-sm text-white placeholder-slate-500 shadow-sm shadow-black/20 focus:outline-none focus:ring-2 focus:ring-brand-accent/60 transition"
           />
         </div>
       </div>
 
       {/* Filter Tabs */}
-      <div className="flex items-center gap-2 border-b border-brand-border pb-3 overflow-x-auto">
+      <div className="flex items-center gap-2 pb-3 overflow-x-auto">
         <Filter className="w-4 h-4 text-slate-500 shrink-0" />
         {[
           { id: "all", label: "All Messages" },
@@ -164,7 +164,7 @@ const Inbox = () => {
             onClick={() => setFilter(tab.id)}
             className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition ${
               filter === tab.id
-                ? "bg-brand-accent/20 text-brand-accent border border-brand-accent/30"
+                ? "bg-brand-accent/20 text-brand-accent"
                 : "text-slate-400 hover:bg-brand-card"
             }`}
           >
@@ -176,7 +176,7 @@ const Inbox = () => {
       {/* Main Inbox Panel */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-6 min-h-125">
         {/* Messages List Column */}
-        <div className="lg:col-span-5 bg-brand-card border border-brand-border rounded-xl divide-y divide-brand-border overflow-hidden">
+        <div className="lg:col-span-5 bg-brand-card rounded-2xl divide-y divide-white/5 overflow-hidden shadow-sm shadow-black/20">
           {filteredMessages.length === 0 ? (
             <div className="p-8 text-center text-slate-500">
               <Mail className="w-8 h-8 mx-auto mb-2 opacity-50" />
@@ -189,7 +189,7 @@ const Inbox = () => {
                 onClick={() => handleSelectMessage(msg)}
                 className={`p-4 cursor-pointer transition ${
                   selectedMessage?.id === msg.id
-                    ? "bg-brand-border/40 border-l-4 border-l-brand-accent"
+                    ? "bg-brand-border/40 border-l-2 border-l-brand-accent"
                     : "hover:bg-brand-border/20"
                 }`}
               >
@@ -216,10 +216,10 @@ const Inbox = () => {
                 </p>
                 <div className="flex items-center justify-between mt-2">
                   <span
-                    className={`text-[10px] px-2 py-0.5 rounded font-semibold ${
+                    className={`text-[10px] px-2 py-0.5 rounded-full font-semibold ${
                       msg.type === "project_brief"
-                        ? "bg-purple-500/10 text-purple-400 border border-purple-500/20"
-                        : "bg-blue-500/10 text-blue-400 border border-blue-500/20"
+                        ? "bg-purple-500/10 text-purple-400"
+                        : "bg-blue-500/10 text-blue-400"
                     }`}
                   >
                     {msg.type === "project_brief"
@@ -236,13 +236,13 @@ const Inbox = () => {
         </div>
 
         {/* Message Detail View Column */}
-        <div className="lg:col-span-7 bg-brand-card border border-brand-border rounded-xl p-4 sm:p-6">
+        <div className="lg:col-span-7 bg-brand-card rounded-2xl p-4 sm:p-6 shadow-sm shadow-black/20">
           {selectedMessage ? (
             <div className="space-y-6">
               {/* Header Actions */}
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-brand-border pb-4">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4">
                 <div className="flex flex-wrap items-center gap-2">
-                  <span className="text-xs px-2.5 py-1 bg-brand-border/50 text-slate-300 rounded font-mono uppercase">
+                  <span className="text-xs px-2.5 py-1 bg-brand-border/50 text-slate-300 rounded-full font-mono uppercase">
                     {selectedMessage.status}
                   </span>
                 </div>
@@ -251,7 +251,7 @@ const Inbox = () => {
                     <button
                       disabled={loadingAction}
                       onClick={() => handleConvertToClient(selectedMessage)}
-                      className="flex items-center gap-1.5 text-xs font-semibold px-3 py-2 sm:py-1.5 bg-brand-accent text-slate-950 rounded hover:bg-sky-400 transition"
+                      className="flex items-center gap-1.5 text-xs font-semibold px-3 py-2 sm:py-1.5 bg-brand-accent text-slate-950 rounded-lg hover:bg-sky-400 transition"
                     >
                       <UserPlus className="w-3.5 h-3.5" /> Convert to Client
                     </button>
@@ -266,14 +266,14 @@ const Inbox = () => {
                           : "archived",
                       )
                     }
-                    className="p-2 sm:p-1.5 text-slate-400 hover:text-white bg-brand-border/30 hover:bg-brand-border rounded transition"
+                    className="p-2 sm:p-1.5 text-slate-400 hover:text-white bg-brand-border/30 hover:bg-brand-border rounded-lg transition"
                   >
                     <Archive className="w-4 h-4" />
                   </button>
                   <button
                     disabled={loadingAction}
                     onClick={() => handleDeleteMessage(selectedMessage)}
-                    className="p-2 sm:p-1.5 text-slate-400 hover:text-red-300 bg-brand-border/30 hover:bg-red-500/10 rounded transition"
+                    className="p-2 sm:p-1.5 text-slate-400 hover:text-red-300 bg-brand-border/30 hover:bg-red-500/10 rounded-lg transition"
                     title="Delete message"
                   >
                     <Trash2 className="w-4 h-4" />
@@ -319,14 +319,14 @@ const Inbox = () => {
               </div>
 
               {/* Message Content */}
-              <div className="p-4 bg-brand-dark/50 border border-brand-border rounded-lg text-sm text-slate-300 space-y-3">
+              <div className="p-4 bg-brand-dark/50 rounded-xl text-sm text-slate-300 space-y-3">
                 {selectedMessage.type === "project_brief" ? (
                   <div className="grid grid-cols-1 gap-3">
                     {getProjectBriefFields(selectedMessage).map(
                       ([label, value]) => (
                         <div
                           key={label}
-                          className="rounded-lg border border-brand-border/70 bg-brand-dark/40 p-3"
+                          className="rounded-xl bg-brand-dark/40 p-3"
                         >
                           <p className="text-[11px] font-semibold uppercase tracking-wide text-slate-500">
                             {label}
@@ -358,3 +358,4 @@ const Inbox = () => {
 };
 
 export default Inbox;
+
